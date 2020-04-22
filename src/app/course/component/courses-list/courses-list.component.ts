@@ -1,7 +1,8 @@
 import { Component, OnInit } from "@angular/core";
 
 import { Course } from "./../../model/course.model";
-import { CourseService } from "./../../services/course.service";
+import { CourseService } from "../../services/course.service";
+import { CoursesQuery } from "../../state/courses.query";
 import { Observable } from "rxjs";
 
 @Component({
@@ -15,9 +16,15 @@ export class CoursesListComponent implements OnInit {
 
   isUpdateActivated = false;
 
-  constructor(private courseService: CourseService) {}
+  constructor(
+    private coursesQuery: CoursesQuery,
+    private courseService: CourseService
+  ) {}
 
-  ngOnInit() {}
+  ngOnInit() {
+    this.courseService.getAllCourses().subscribe();
+    this.courses$ = this.coursesQuery.collection$;
+  }
 
   deleteCourse(courseId: string) {}
 
