@@ -5,6 +5,7 @@ import { BrowserModule } from "@angular/platform-browser";
 import { CourseModule } from "./course/course.module";
 import { HttpClientModule } from "@angular/common/http";
 import { NgModule } from "@angular/core";
+import { environment } from "src/environments/environment";
 
 @NgModule({
   declarations: [AppComponent],
@@ -13,7 +14,7 @@ import { NgModule } from "@angular/core";
     AppRoutingModule,
     HttpClientModule,
     CourseModule,
-    AkitaNgDevtools
+    !environment.production ? AkitaNgDevtools : []
   ],
   providers: [],
   bootstrap: [AppComponent]
