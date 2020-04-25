@@ -23,10 +23,12 @@ export class CoursesListComponent implements OnInit {
 
   ngOnInit() {
     this.courseService.getAllCourses().subscribe();
-    this.courses$ = this.coursesQuery.collection$;
+    this.courses$ = this.coursesQuery.selectAll();
   }
 
-  deleteCourse(courseId: string) {}
+  deleteCourse(courseId: string) {
+    this.courseService.deleteCourse(courseId).subscribe();
+  }
 
   showUpdateForm(course: Course) {
     this.courseToBeUpdated = { ...course };
@@ -34,6 +36,15 @@ export class CoursesListComponent implements OnInit {
   }
 
   updateCourse(updateForm) {
+    const update: Partial<Course> = {
+      ...this.courseToBeUpdated,
+      ...updateForm.value
+    };
+
+    this.courseService
+      .updateCourse(this.courseToBeUpdated.id, this.courseToBeUpdated)
+      .subscribe();
+
     this.isUpdateActivated = false;
     this.courseToBeUpdated = null;
   }

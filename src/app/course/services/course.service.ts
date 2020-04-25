@@ -16,23 +16,35 @@ export class CourseService {
   getAllCourses(): Observable<Course[]> {
     return this.http.get<Course[]>("/api/courses").pipe(
       tap((result: any) => {
-        this.coursesStore.update({ collection: result });
+        this.coursesStore.set(result);
       })
     );
   }
 
   createCourse(course: Course): Observable<Course> {
-    return this.http.post<Course>("/api/courses", course);
+    return this.http.post<Course>("/api/courses", course).pipe(
+      tap((result: any) => {
+        this.coursesStore.add(course);
+      })
+    );
   }
 
   deleteCourse(courseId: string): Observable<any> {
-    return this.http.delete("/api/courses/" + courseId);
+    return this.http.delete("/api/courses/" + courseId).pipe(
+      tap((result: any) => {
+        this.coursesStore.remove(courseId);
+      })
+    );
   }
 
   updateCourse(
     courseId: string | number,
     changes: Partial<Course>
   ): Observable<any> {
-    return this.http.put("/api/courses/" + courseId, changes);
+    return this.http.put("/api/courses/" + courseId, changes).pipe(
+      tap((result: any) => {
+        this.coursesStore.update(courseId, changes);
+      })
+    );
   }
 }
