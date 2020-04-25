@@ -9,4 +9,8 @@ export interface CoursesState extends EntityState<Course> {}
   providedIn: "root"
 })
 @StoreConfig({ name: "courses" })
-export class CoursesStore extends EntityStore<CoursesState, Course> {}
+export class CoursesStore extends EntityStore<CoursesState, Course> {
+  constructor() {
+    super();
+  }
+}
