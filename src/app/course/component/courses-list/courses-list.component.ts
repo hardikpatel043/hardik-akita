@@ -1,11 +1,11 @@
 import { Component, OnInit } from "@angular/core";
+import { Observable, combineLatest } from "rxjs";
 import { startWith, switchMap } from "rxjs/operators";
 
 import { Course } from "./../../model/course.model";
 import { CourseService } from "../../services/course.service";
 import { CoursesQuery } from "../../state/courses.query";
 import { FormControl } from "@angular/forms";
-import { Observable } from "rxjs";
 
 @Component({
   selector: "app-courses-list",
@@ -18,6 +18,7 @@ export class CoursesListComponent implements OnInit {
 
   isUpdateActivated = false;
   search = new FormControl();
+  sort = new FormControl("assending");
 
   constructor(
     private coursesQuery: CoursesQuery,
@@ -27,14 +28,12 @@ export class CoursesListComponent implements OnInit {
   ngOnInit() {
     this.courseService.getAllCourses().subscribe();
 
-    this.courses$ = this.search.valueChanges.pipe(
-      startWith(""),
-      switchMap(value =>
-        this.coursesQuery.selectAll({
-          filterBy: entity =>
-            entity.name.toLowerCase().includes(value) ||
-            entity.description.toLowerCase().includes(value)
-        })
+    this.courses$ = combineLatest(
+      this.search.valueChanges.pipe(startWith("")),
+      this.sort.valueChanges.pipe(startWith("assending"))
+    ).pipe(
+      switchMap(([term, sortBy]) =>
+        this.coursesQuery.getAllCourses(term, sortBy)
       )
     );
   }
