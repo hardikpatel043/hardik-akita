@@ -1,8 +1,10 @@
 import { Component, OnInit } from "@angular/core";
+import { startWith, switchMap } from "rxjs/operators";
 
 import { Course } from "./../../model/course.model";
 import { CourseService } from "../../services/course.service";
 import { CoursesQuery } from "../../state/courses.query";
+import { FormControl } from "@angular/forms";
 import { Observable } from "rxjs";
 
 @Component({
@@ -15,6 +17,7 @@ export class CoursesListComponent implements OnInit {
   courseToBeUpdated: Course;
 
   isUpdateActivated = false;
+  search = new FormControl();
 
   constructor(
     private coursesQuery: CoursesQuery,
@@ -23,7 +26,17 @@ export class CoursesListComponent implements OnInit {
 
   ngOnInit() {
     this.courseService.getAllCourses().subscribe();
-    this.courses$ = this.coursesQuery.selectAll();
+
+    this.courses$ = this.search.valueChanges.pipe(
+      startWith(""),
+      switchMap(value =>
+        this.coursesQuery.selectAll({
+          filterBy: entity =>
+            entity.name.toLowerCase().includes(value) ||
+            entity.description.toLowerCase().includes(value)
+        })
+      )
+    );
   }
 
   deleteCourse(courseId: string) {
